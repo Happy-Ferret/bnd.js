@@ -1,4 +1,4 @@
-function bnd(model, mapping, events) {
+function Bnd(model, mapping, events) {
   'use strict';
 
   /* jshint esnext:true, -W040 */
@@ -29,4 +29,4 @@ function bnd(model, mapping, events) {
   }
 
   Object.keys(mapping).forEach(proxyProperty.bind(this));
-};
+}

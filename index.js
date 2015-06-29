@@ -10,7 +10,7 @@
     setDesc: function(val) { return this.desc = val; },
   };
 
-  window.bound = bnd(window.todo, {
+  window.bound = new Bnd(window.todo, {
     title: 'h1',
     desc: {
       sel: 'p',
