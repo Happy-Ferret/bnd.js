@@ -1,4 +1,4 @@
-function Bnd(_model, _mapping, _events) {
+(function(window) {
   'use strict';
 
   function forEachMatching(sel, fn) {
@@ -6,51 +6,56 @@ function Bnd(_model, _mapping, _events) {
       document.querySelectorAll(sel), fn);
   }
 
-  function reflectChange(prop, val) {
-    const descriptor = _mapping[prop];
-    Object.keys(descriptor).filter(
-      sel => !sel.startsWith('__')).forEach(
-      sel => forEachMatching(
-        sel, elem => changeElement(elem, descriptor[sel], val)));
-  }
+  window.Bnd = function(_model, _mapping, _events) {
 
-  function changeElement(elem, attrs, val) {
-    attrs.split(/,\s*/).forEach(attr => changeAttr(elem, attr, val));
-  }
-
-  function changeAttr(elem, attr, val) {
-    switch (attr) {
-      case 'textContent':
-      case 'innerHTML':
-        elem[attr] = val;
-        break;
-      default:
-        elem.setAttribute(attr, val);
+    function reflectChange(prop, val) {
+      const descriptor = _mapping[prop];
+      Object.keys(descriptor).filter(
+        sel => !sel.startsWith('__')).forEach(
+        sel => forEachMatching(
+          sel, elem => changeElement(elem, descriptor[sel], val)));
     }
-  }
 
-  function proxyProperty(prop) {
-    const descriptor = _mapping[prop];
+    function changeElement(elem, attrs, val) {
+      attrs.split(/,\s*/).forEach(attr => changeAttr(elem, attr, val));
+    }
 
-    const get = descriptor.__get ?
-      () => descriptor.__get.call(_model) :
-      () => _model[prop];
-    const set = descriptor.__set ?
-      val => reflectChange(
-        prop, descriptor.__set.call(_model, val)) :
-      val => reflectChange(
-        prop, _model[prop] = val);
-    Object.defineProperty(this, prop, {get, set});
+    function changeAttr(elem, attr, val) {
+      switch (attr) {
+        case 'textContent':
+        case 'innerHTML':
+          elem[attr] = val;
+          break;
+        default:
+          elem.setAttribute(attr, val);
+      }
+    }
 
-    reflectChange(prop, get());
-  }
+    function proxyProperty(prop) {
+      const descriptor = _mapping[prop];
 
-  function addEventListeners(key) {
-    const [evtName, ...sel] = key.split(' ');
-    forEachMatching(sel.join(' '), elem => elem.addEventListener(
-      evtName, evt => _events[key](evt, this)));
-  }
+      const get = descriptor.__get ?
+        () => descriptor.__get.call(_model) :
+        () => _model[prop];
+      const set = descriptor.__set ?
+        val => reflectChange(
+          prop, descriptor.__set.call(_model, val)) :
+        val => reflectChange(
+          prop, _model[prop] = val);
+      Object.defineProperty(this, prop, {get, set});
 
-  Object.keys(_mapping).forEach(proxyProperty.bind(this));
-  Object.keys(_events).forEach(addEventListeners.bind(this));
-}
+      reflectChange(prop, get());
+    }
+
+    function addEventListeners(key) {
+      const keyParts = key.split(' ');
+      const [evtName, sel] = [keyParts.shift(), keyParts.join(' ')];
+      forEachMatching(sel.join(' '), elem => elem.addEventListener(
+        evtName, evt => _events[key](evt, this)));
+    }
+
+    Object.keys(_mapping).forEach(proxyProperty.bind(this));
+    Object.keys(_events).forEach(addEventListeners.bind(this));
+  };
+
+})(window);
