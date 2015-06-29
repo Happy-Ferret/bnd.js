@@ -3,6 +3,8 @@
 
   /* jshint esnext:true, -W040 */
 
+  const forEach = Array.prototype.forEach;
+
   function Bound(model, mapping, events) {
     function getProperty(prop) {
       return model[prop];
@@ -13,7 +15,7 @@
     }
 
     function reflectChange(prop, val) {
-      Array.prototype.forEach.call(
+      forEach.call(
         document.querySelectorAll(mapping[prop]),
         elem => elem.innerHTML = val);
     }

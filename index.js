@@ -4,11 +4,13 @@
   /* jshint esnext:true, -W040 */
 
   window.todo = {
-    title: 'Hello'
+    title: 'Bound.js',
+    desc: 'Create the world\'s tiniest two-way binding library'
   };
 
   window.bound = new Bound(window.todo, {
-    title: 'p'
+    title: 'h1',
+    desc: 'p'
   }, {
     'click h1': evt => alert(evt.target),
     'change input': evt => this.title = evt.value
