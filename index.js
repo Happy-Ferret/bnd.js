@@ -1,7 +1,7 @@
 (function(window) {
   'use strict';
 
-  /* jshint esnext:true, -W040 */
+  /* jshint esnext:true, -W040, -W093 */
 
   window.todo = {
     title: 'bnd.js',
