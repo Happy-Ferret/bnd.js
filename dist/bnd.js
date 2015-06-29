@@ -65,7 +65,7 @@ window.Bnd = (function () {
     };
 
     _presenter(this);
-    Object.keys(_bindings).forEach(proxyProperty.bind(this));
+    Object.keys(_bindings).forEach(proxyProperty, this);
   }
 
   function forEachMatching(sel, fn) {
