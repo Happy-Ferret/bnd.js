@@ -13,7 +13,7 @@
   window.bound = new Bnd(window.todo, {
     title: 'h1',
     desc: {
-      sel: 'p',
+      sel: 'p, div',
       get: todo.getDesc,
       set: todo.setDesc,
     }
