@@ -24,7 +24,8 @@
       'body p': 'innerHTML'
     },
     editingDisabled: {
-      'input[type="text"]': 'disabled'
+      'input[type="text"]': 'disabled',
+      'h1': 'class red upper'
     }
   }, function(self) {
     self.on('click', 'h1', evt => alert(evt.target.textContent));

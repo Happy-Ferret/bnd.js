@@ -23,11 +23,16 @@ window.Bnd = (function () {
       });
     }
 
-    function changeAttr(elem, attr, val) {
+    function changeAttr(elem, attrDef, val) {
+      var attrParts = attrDef.split(' ');
+      var attr = attrParts.shift();
       switch (attr) {
         case 'textContent':
         case 'innerHTML':
           return elem[attr] = val;
+        case 'class':
+          var list = elem.classList;
+          return val ? list.add.apply(list, attrParts) : list.remove.apply(list, attrParts);
         default:
           return val ? elem.setAttribute(attr, val) : elem.removeAttribute(attr);
       }

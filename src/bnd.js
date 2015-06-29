@@ -17,11 +17,18 @@ window.Bnd = (function() {
       attrs.split(/,\s*/).forEach(attr => changeAttr(elem, attr, val));
     }
 
-    function changeAttr(elem, attr, val) {
+    function changeAttr(elem, attrDef, val) {
+      const attrParts = attrDef.split(' ');
+      const attr = attrParts.shift();
       switch (attr) {
         case 'textContent':
         case 'innerHTML':
           return elem[attr] = val;
+        case 'class':
+          const list = elem.classList;
+          return val ?
+            list.add.apply(list, attrParts) :
+            list.remove.apply(list, attrParts);
         default:
           return val ?
             elem.setAttribute(attr, val) :
