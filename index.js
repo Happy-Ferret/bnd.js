@@ -6,14 +6,21 @@
   window.todo = {
     title: 'bnd.js',
     _desc: 'Create the world\'s tiniest two-way binding library.',
+    owner: 'Staś',
     getDesc: function() { return '<em>' + this._desc + '</em>'; },
     setDesc: function(val) { return this._desc = val; },
   };
 
   window.bound = new Bnd(window.todo, {
-    title: 'h1',
+    title: {
+      'h1': 'textContent, title',
+      'input': 'placeholder'
+    },
+    owner: 'sup, div.footer',
     desc: {
-      sel: 'p, div',
+      sel: {
+        'body p': 'innerHTML'
+      },
       get: todo.getDesc,
       set: todo.setDesc,
     }
