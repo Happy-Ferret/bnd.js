@@ -16,13 +16,13 @@
       'h1': 'textContent, title',
       'input': 'placeholder'
     },
-    owner: 'sup, div.footer',
+    owner: {
+      'sup, div.footer': 'textContent'
+    },
     desc: {
-      sel: {
-        'body p': 'innerHTML'
-      },
-      get: hello.getDesc,
-      set: hello.setDesc,
+      'body p': 'innerHTML',
+      __get: hello.getDesc,
+      __set: hello.setDesc,
     }
   }, {
     'click h1': evt => alert(evt.target.textContent),

@@ -3,22 +3,17 @@ function Bnd(_model, _mapping, _events) {
 
   /* jshint esnext:true, -W040 */
 
-  const bndSelectors = Object.create(null);
-
   function forEachMatching(sel, fn) {
     Array.prototype.forEach.call(
       document.querySelectorAll(sel), fn);
   }
 
   function reflectChange(prop, val) {
-    const sels = bndSelectors[prop];
-    if (typeof sels === 'string') {
-      forEachMatching(sels, elem => changeAttr(elem, 'textContent', val));
-    } else {
-      Object.keys(sels).forEach(
-        sel => forEachMatching(
-          sel, elem => changeElement(elem, sels[sel], val)));
-    }
+    const descriptor = _mapping[prop];
+    Object.keys(descriptor).filter(
+      sel => !sel.startsWith('__')).forEach(
+      sel => forEachMatching(
+        sel, elem => changeElement(elem, descriptor[sel], val)));
   }
 
   function changeElement(elem, attrs, val) {
@@ -38,14 +33,13 @@ function Bnd(_model, _mapping, _events) {
 
   function proxyProperty(prop) {
     const descriptor = _mapping[prop];
-    bndSelectors[prop] = descriptor.sel || descriptor;
 
-    const get = descriptor.get ?
-      () => descriptor.get.call(_model) :
+    const get = descriptor.__get ?
+      () => descriptor.__get.call(_model) :
       () => _model[prop];
-    const set = descriptor.set ?
+    const set = descriptor.__set ?
       val => reflectChange(
-        prop, descriptor.set.call(_model, val)) :
+        prop, descriptor.__set.call(_model, val)) :
       val => reflectChange(
         prop, _model[prop] = val);
     Object.defineProperty(this, prop, {get, set});

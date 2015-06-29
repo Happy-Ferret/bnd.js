@@ -7,25 +7,19 @@ function Bnd(_model, _mapping, _events) {
 
   /* jshint esnext:true, -W040 */
 
-  var bndSelectors = Object.create(null);
-
   function forEachMatching(sel, fn) {
     Array.prototype.forEach.call(document.querySelectorAll(sel), fn);
   }
 
   function reflectChange(prop, val) {
-    var sels = bndSelectors[prop];
-    if (typeof sels === 'string') {
-      forEachMatching(sels, function (elem) {
-        return changeAttr(elem, 'textContent', val);
+    var descriptor = _mapping[prop];
+    Object.keys(descriptor).filter(function (sel) {
+      return !sel.startsWith('__');
+    }).forEach(function (sel) {
+      return forEachMatching(sel, function (elem) {
+        return changeElement(elem, descriptor[sel], val);
       });
-    } else {
-      Object.keys(sels).forEach(function (sel) {
-        return forEachMatching(sel, function (elem) {
-          return changeElement(elem, sels[sel], val);
-        });
-      });
-    }
+    });
   }
 
   function changeElement(elem, attrs, val) {
@@ -47,15 +41,14 @@ function Bnd(_model, _mapping, _events) {
 
   function proxyProperty(prop) {
     var descriptor = _mapping[prop];
-    bndSelectors[prop] = descriptor.sel || descriptor;
 
-    var get = descriptor.get ? function () {
-      return descriptor.get.call(_model);
+    var get = descriptor.__get ? function () {
+      return descriptor.__get.call(_model);
     } : function () {
       return _model[prop];
     };
-    var set = descriptor.set ? function (val) {
-      return reflectChange(prop, descriptor.set.call(_model, val));
+    var set = descriptor.__set ? function (val) {
+      return reflectChange(prop, descriptor.__set.call(_model, val));
     } : function (val) {
       return reflectChange(prop, _model[prop] = val);
     };
