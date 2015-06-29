@@ -5,8 +5,6 @@ function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
 function Bnd(_model, _mapping, _events) {
   'use strict';
 
-  /* jshint esnext:true, -W040 */
-
   function forEachMatching(sel, fn) {
     Array.prototype.forEach.call(document.querySelectorAll(sel), fn);
   }

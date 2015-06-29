@@ -3,6 +3,13 @@ var gulp = require('gulp');
 var babel = require('gulp-babel');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
+var jshint = require('gulp-jshint');
+
+gulp.task('lint', function () {
+  gulp.src('srv/bnd.js')
+    .pipe(jshint('.jshintrc'))
+    .pipe(jshint.reporter('jshint-stylish'));
+});
 
 gulp.task('clean', function(cb) {
   del(['dist/*'], cb);
@@ -21,4 +28,4 @@ gulp.task('uglify', ['transpile'], function() {
     .pipe(gulp.dest('dist'));
 });
  
-gulp.task('default', ['uglify']);
+gulp.task('default', ['lint', 'uglify']);
