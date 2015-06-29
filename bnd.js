@@ -5,10 +5,13 @@ function Bnd(model, mapping, events) {
 
   const selectors = Object.create(null);
 
-  function reflectChange(prop, val) {
+  function forEach(sel, fn) {
     Array.prototype.forEach.call(
-      document.querySelectorAll(selectors[prop]),
-      elem => elem.innerHTML = val);
+      document.querySelectorAll(sel), fn);
+  }
+
+  function reflectChange(prop, val) {
+    forEach(selectors[prop], elem => elem.innerHTML = val);
   }
 
   function proxyProperty(prop) {
@@ -28,5 +31,12 @@ function Bnd(model, mapping, events) {
     reflectChange(prop, get());
   }
 
+  function addEventListeners(key) {
+    const [evtName, ...sel] = key.split(' ');
+    forEach(sel.join(' '), elem => elem.addEventListener(
+      evtName, evt => events[key](evt, this)));
+  }
+
   Object.keys(mapping).forEach(proxyProperty.bind(this));
+  Object.keys(events).forEach(addEventListeners.bind(this));
 }

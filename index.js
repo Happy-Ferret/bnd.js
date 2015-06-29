@@ -5,21 +5,21 @@
 
   window.todo = {
     title: 'bnd.js',
-    desc: 'Create the world\'s tiniest two-way binding library.',
-    //getDesc: function() { return this.desc; },
-    setDesc: function(val) { return this.desc = val; },
+    _desc: 'Create the world\'s tiniest two-way binding library.',
+    getDesc: function() { return '<em>' + this._desc + '</em>'; },
+    setDesc: function(val) { return this._desc = val; },
   };
 
   window.bound = new Bnd(window.todo, {
     title: 'h1',
     desc: {
       sel: 'p',
-      //get: todo.getDesc,
+      get: todo.getDesc,
       set: todo.setDesc,
     }
   }, {
-    'click h1': evt => alert(evt.target),
-    'change input': evt => this.title = evt.value
+    'click h1': evt => alert(evt.target.textContent),
+    'keyup input': (evt, self) => self.title = evt.target.value
   });
 
 })(this);
