@@ -15,21 +15,32 @@
   window.bound = new Bnd(window.hello, {
     title: {
       'h1': 'textContent, title',
-      'input': 'placeholder'
+      'input[type="text"]': 'placeholder'
     },
     owner: {
       'sup, div.footer': 'textContent'
     },
     desc: {
       'body p': 'innerHTML'
+    },
+    editingDisabled: {
+      'input[type="text"]': 'disabled'
     }
   }, function(self) {
     self.on('click', 'h1', evt => alert(evt.target.textContent));
     self.on('keyup', 'input', (evt, self) => self.title = evt.target.value);
+    self.on('change', 'input[type="checkbox"]',
+      (evt, self) => self.editingDisabled = evt.target.checked);
 
-    self.define('desc', {
+    self.def('desc', {
       get: window.hello.getDesc,
       set: window.hello.setDesc
+    });
+
+    let editingDisabled = false;
+    self.def('editingDisabled', {
+      get: () => editingDisabled,
+      set: val => editingDisabled = val
     });
   });
 

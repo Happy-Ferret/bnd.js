@@ -21,10 +21,11 @@ window.Bnd = (function() {
       switch (attr) {
         case 'textContent':
         case 'innerHTML':
-          elem[attr] = val;
-          break;
+          return elem[attr] = val;
         default:
-          elem.setAttribute(attr, val);
+          return val ?
+            elem.setAttribute(attr, val) :
+            elem.removeAttribute(attr);
       }
     }
 
@@ -38,7 +39,7 @@ window.Bnd = (function() {
       reflectChange(prop, get());
     }
 
-    this.define = function(prop, {get, set}) {
+    this.def = function(prop, {get, set}) {
       if (get) _getters[prop] = get;
       if (set) _setters[prop] = set;
     };
