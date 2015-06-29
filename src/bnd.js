@@ -1,17 +1,14 @@
-(function(window) {
+window.Bnd = (function() {
   'use strict';
 
-  function forEachMatching(sel, fn) {
-    Array.prototype.forEach.call(
-      document.querySelectorAll(sel), fn);
-  }
+  function Bnd(_model, _bindings, _presenter) {
 
-  window.Bnd = function(_model, _mapping, _events) {
+    const _getters = {};
+    const _setters = {};
 
     function reflectChange(prop, val) {
-      const descriptor = _mapping[prop];
-      Object.keys(descriptor).filter(
-        sel => !sel.startsWith('__')).forEach(
+      const descriptor = _bindings[prop];
+      Object.keys(descriptor).forEach(
         sel => forEachMatching(
           sel, elem => changeElement(elem, descriptor[sel], val)));
     }
@@ -32,30 +29,36 @@
     }
 
     function proxyProperty(prop) {
-      const descriptor = _mapping[prop];
-
-      const get = descriptor.__get ?
-        () => descriptor.__get.call(_model) :
-        () => _model[prop];
-      const set = descriptor.__set ?
-        val => reflectChange(
-          prop, descriptor.__set.call(_model, val)) :
-        val => reflectChange(
-          prop, _model[prop] = val);
+      const get = () => _getters[prop] ?
+        _getters[prop].call(_model) : _model[prop];
+      const set = val => reflectChange(prop, _setters[prop] ?
+        _setters[prop].call(_model, val) : _model[prop] = val);
       Object.defineProperty(this, prop, {get, set});
 
       reflectChange(prop, get());
     }
 
-    function addEventListeners(key) {
-      const keyParts = key.split(' ');
-      const [evtName, sel] = [keyParts.shift(), keyParts.join(' ')];
-      forEachMatching(sel.join(' '), elem => elem.addEventListener(
-        evtName, evt => _events[key](evt, this)));
-    }
+    this.define = function(prop, {get, set}) {
+      if (get) _getters[prop] = get;
+      if (set) _setters[prop] = set;
+    };
 
-    Object.keys(_mapping).forEach(proxyProperty.bind(this));
-    Object.keys(_events).forEach(addEventListeners.bind(this));
-  };
+    this.on = function(evtName, sel, handler) {
+      forEachMatching(
+        sel, elem => elem.addEventListener(
+          evtName, evt => handler(evt, this)));
+    };
 
-})(window);
+    _presenter(this);
+    Object.keys(_bindings).forEach(proxyProperty.bind(this));
+
+  }
+
+  function forEachMatching(sel, fn) {
+    Array.prototype.forEach.call(
+      document.querySelectorAll(sel), fn);
+  }
+
+  return Bnd;
+
+})();

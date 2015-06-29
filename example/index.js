@@ -1,6 +1,7 @@
 (function(window) {
   'use strict';
 
+  /* global Bnd */
   /* jshint esnext:true, -W040, -W093 */
 
   window.hello = {
@@ -20,13 +21,16 @@
       'sup, div.footer': 'textContent'
     },
     desc: {
-      'body p': 'innerHTML',
-      __get: hello.getDesc,
-      __set: hello.setDesc,
+      'body p': 'innerHTML'
     }
-  }, {
-    'click h1': evt => alert(evt.target.textContent),
-    'keyup input': (evt, self) => self.title = evt.target.value
+  }, function(self) {
+    self.on('click', 'h1', evt => alert(evt.target.textContent));
+    self.on('keyup', 'input', (evt, self) => self.title = evt.target.value);
+
+    self.define('desc', {
+      get: window.hello.getDesc,
+      set: window.hello.setDesc
+    });
   });
 
 })(this);
