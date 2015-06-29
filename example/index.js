@@ -18,10 +18,10 @@
       'input[type="text"]': 'placeholder'
     },
     owner: {
-      'sup, div.footer': 'textContent'
+      'small': 'textContent'
     },
     desc: {
-      'body p': 'innerHTML'
+      'body p, div.footer': 'innerHTML'
     },
     editingDisabled: {
       'input[type="text"]': 'disabled',
