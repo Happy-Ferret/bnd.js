@@ -2,7 +2,7 @@
 
 function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
 
-function Bnd(model, mapping, events) {
+function Bnd(_model, _mapping, _events) {
   'use strict';
 
   /* jshint esnext:true, -W040 */
@@ -46,18 +46,18 @@ function Bnd(model, mapping, events) {
   }
 
   function proxyProperty(prop) {
-    var descriptor = mapping[prop];
+    var descriptor = _mapping[prop];
     bndSelectors[prop] = descriptor.sel || descriptor;
 
     var get = descriptor.get ? function () {
-      return descriptor.get.call(model);
+      return descriptor.get.call(_model);
     } : function () {
-      return model[prop];
+      return _model[prop];
     };
     var set = descriptor.set ? function (val) {
-      return reflectChange(prop, descriptor.set.call(model, val));
+      return reflectChange(prop, descriptor.set.call(_model, val));
     } : function (val) {
-      return reflectChange(prop, model[prop] = val);
+      return reflectChange(prop, _model[prop] = val);
     };
     Object.defineProperty(this, prop, { get: get, set: set });
 
@@ -77,11 +77,11 @@ function Bnd(model, mapping, events) {
 
     forEachMatching(sel.join(' '), function (elem) {
       return elem.addEventListener(evtName, function (evt) {
-        return events[key](evt, _this);
+        return _events[key](evt, _this);
       });
     });
   }
 
-  Object.keys(mapping).forEach(proxyProperty.bind(this));
-  Object.keys(events).forEach(addEventListeners.bind(this));
+  Object.keys(_mapping).forEach(proxyProperty.bind(this));
+  Object.keys(_events).forEach(addEventListeners.bind(this));
 }
